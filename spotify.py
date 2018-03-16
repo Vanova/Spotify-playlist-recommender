@@ -141,8 +141,7 @@ for item in range(0, len(other_song_ids), 5):
 train = pd.DataFrame(features)
 
 
-# split the training data/ testing data
-
+# split the tr
 train, test = train_test_split(train, test_size=0.2)
 print("train size: {}, Test size: {}".format(len(train), len(test)))
 
