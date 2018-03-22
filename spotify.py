@@ -55,6 +55,12 @@ hiphop_playlist = model.user_playlist("rachit.mishra94",
 other_playlist = model.user_playlist("fh6g7k0xv9nim7jbewm42in21",
                                      "4UMMRDG0FyMV0IDAeoFJza")
 
+suds_playlist = model.user_playlist("sudarsh8998",
+                                               "3jmoXYoGBHueNBvAES0PAc?si=8DfX3NzARmatkbxYBDUBsQ")
+
+mt_playlist = model.user_playlist("marriah.talha",
+                                  "7Cfb498pWbxLEkRsIk9qZl")
+
 
 ## READING THE TRACKS FROM THE PLAYLISTS
 
@@ -74,25 +80,23 @@ for val in range(len(rap_songs)):
     rap_song_ids.append(rap_songs[val]['track']['id'])
 hip_hop_tracks
 
-
 #### For the other playlist
 
+akshat_tracks = other_playlist["tracks"]
+akshat_songs = akshat_tracks["items"]
 
-other_tracks = other_playlist["tracks"]
-other_songs = other_tracks["items"]
+while akshat_tracks['next']:
+    akshat_tracks = model.next(akshat_tracks)
 
-while other_tracks['next']:
-    other_tracks = model.next(other_tracks)
-
-    for each_item in other_tracks["items"]:
-        other_songs.append(each_item)
+    for each_item in akshat_tracks["items"]:
+        akshat_songs.append(each_item)
 
 other_song_ids = []
-print(len(other_songs))
+print(len(akshat_songs))
 
-for val in range(len(other_songs)-610):
-    other_song_ids.append(other_songs[val]['track']['id'])
-other_tracks
+for val in range(len(akshat_songs)-610):
+    other_song_ids.append(akshat_songs[val]['track']['id'])
+akshat_tracks
 
 
 #####!#
@@ -128,7 +132,7 @@ for item in range(0, len(other_song_ids), 5):
 
     for track in audio_features:
         features.append(track)
-        track = other_songs[temp]
+        track = akshat_songs[temp]
 
         temp2+=1
 
@@ -179,6 +183,7 @@ neg_popularity = train[train['target'] == 0]['trackPopularity']
 
 print(pos_popularity)
 print(neg_popularity)
+
 
 ### Tracks figures/plots/EDA visualizations
 
