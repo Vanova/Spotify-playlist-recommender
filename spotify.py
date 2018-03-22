@@ -344,53 +344,56 @@ token = util.prompt_for_user_token(username, scope, client_id=clientid, client_s
 
 if token:
     sp = spotipy.Spotify(auth=token)
-new_playlist_check = sp.user_playlist("sudarsh8998", "3jmoXYoGBHueNBvAES0PAc?si=8DfX3NzARmatkbxYBDUBsQ")
-#new_playlist_check = sp.user_playlist("fh6g7k0xv9nim7jbewm42in21","4UMMRDG0FyMV0IDAeoFJza")
-#new_playlist_check = sp.user_playlist("marriah.talha", "7Cfb498pWbxLEkRsIk9qZl")
 
-mt_tracks = new_playlist_check["tracks"]
-mt_songs = mt_tracks["items"]
 
-while mt_tracks['next']:
-    mt_tracks = sp.next(mt_tracks)
+new_playlist_check = sp.user_playlist("sudarsh8998",
+                                      "3jmoXYoGBHueNBvAES0PAc?si=8DfX3NzARmatkbxYBDUBsQ")
 
-    for each_song in mt_tracks["items"]:
-        mt_songs.append(each_song)
+#new_playlist_check = sp.user_playlist("promotingsounds",
+ #                                     "0mSf78pnq5xVU6kOtdv6dx")
+
+new_tracks  = new_playlist_check["tracks"]
+new_songs = new_tracks["items"]
+
+while new_tracks['next']:
+    new_tracks = sp.next(new_tracks)
+
+    for each_song in new_tracks["items"]:
+        new_songs.append(each_song)
 ## 224 songs in total in m.t space
-mt_songs_ids = []
-print(len(mt_songs))
+new_songs_ids = []
+print(len(new_songs))
 
-for i in range(len(mt_songs)):
-    mt_songs_ids.append(mt_songs[i]['track']['id'])
+for i in range(len(new_songs)):
+    new_songs_ids.append(new_songs[i]['track']['id'])
 
 ## features of new playlist
-mt_new_features = []
-j = 0
+new_features = []
+temp = 0
 
-for  i in range(0, len(mt_songs_ids)):
-    songs = sp.audio_features(mt_songs_ids[i])
+for i in range(0, len(new_songs_ids)):
+    songs = sp.audio_features(new_songs_ids[i])
     for song in songs:
-        song['song_title'] = mt_songs[j]['track']['name']
-        song['artist'] = mt_songs[j]['track']['artists'][0]['name']
-        j+=1
-        mt_new_features.append(song)
+        song['song_title'] = new_songs[temp]['track']['name']
+        song['artist'] = new_songs[temp]['track']['artists'][0]['name']
+        temp+=1
+        new_features.append(song)
 
-print(len(mt_new_features))
+print(len(new_features))
 
-test_playlist = pd.DataFrame(mt_new_features)
+test_playlist = pd.DataFrame(new_features)
 
 #### tIME FOR PREDICTION #####
 
 
 # using gradient boosting
 from sklearn.ensemble import GradientBoostingClassifier
-gbc = GradientBoostingClassifier(n_estimators=100, learning_rate=.1, max_depth=1, random_state=0)
+gbc = GradientBoostingClassifier(n_estimators=100, learning_rate=.2, max_depth=1, random_state=0)
 gbc.fit(x_train, y_train)
 predicted = gbc.predict(x_test)
 score = accuracy_score(y_test, predicted)*100
 print("Accuracy using Gbc: ", round(score, 1), "%")
-predictor = gbc.predict(test_playlist[features])
-
+predictor = gbc.predict(test_playlist[new_features])
 
 ## using the original DT with 90% accuracy
 dt.fit(x_train, y_train)
@@ -400,7 +403,6 @@ score = accuracy_score(y_test, predicted)*100
 #print("Accuracy using Gbc: ", round(score, 1), "%")
 
 predictor = dt.predict(test_playlist[features])
-
 songs_i_like  = 0
 temp = 0
 
@@ -411,10 +413,4 @@ for val in predictor:
     temp+=1
 
 #print("Can relate to: " + songs_i_like/temp + "of the playlist")
-
-
-## Sampled playlists used for testing
-###### 1. Akshat's playlist - 57/710 songs
-###### 2. m.t space
-#### Sud's playlist
 
